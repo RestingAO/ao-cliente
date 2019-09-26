@@ -148,39 +148,34 @@ Private Function Effect_NextOpenSlot() As Integer
     'Finds the next open effects index
     'More info: http://www.vbgore.com/CommonCode.Particles.Effect_NextOpenSlot
     '*****************************************************************
-
     Dim EffectIndex As Integer
     
-    With Effect(EffectIndex)
+    'Find The Next Open Effect Slot
+    Do
+        EffectIndex = EffectIndex + 1   'Check The Next Slot
+
+        If EffectIndex > NumEffects Then    'Dont Go Over Maximum Amount
+            Effect_NextOpenSlot = -1
+            Exit Function
+
+        End If
     
-        'Find The Next Open Effect Slot
-        Do
+    Loop While Effect(EffectIndex).Used = True    'Check Next If Effect Is In Use
+
+    'Return the next open slot
+    Effect_NextOpenSlot = EffectIndex
         
-            EffectIndex = EffectIndex + 1   'Check The Next Slot
-
-            If EffectIndex > NumEffects Then    'Dont Go Over Maximum Amount
-                Effect_NextOpenSlot = -1
-
-                Exit Function
-
-            End If
-
-        Loop While .Used = True  'Check Next If Effect Is In Use
-
-        'Return the next open slot
-        Effect_NextOpenSlot = EffectIndex
+    With Effect(EffectIndex)
     
         'Clear the old information from the effect
         Erase .Particles()
         Erase .PartVertex()
-          
         Call ZeroMemory(Effect(EffectIndex), LenB(Effect(EffectIndex)))
-    
         .GoToX = -30000
         .GoToY = -30000
     
     End With
-          
+    
 End Function
 
 Private Sub Effect_UpdateOffset(ByVal EffectIndex As eParticulas)
