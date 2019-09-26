@@ -1,14 +1,10 @@
 Attribute VB_Name = "mDx8_ParticulasVBGORE_Efectos"
 Option Explicit
 
-'Constants With The Order Number For Each Effect
-Public Const EffectNum_Snow As Byte = 2             'Snow that covers the screen - weather effect
-Public Const EffectNum_Rain As Byte = 7             'Exact same as snow, but moves much faster and more alpha value - weather effect
-
 'esto lo declaro aca por que falta parece solo usarse en este modulo
 Private WeatherEffectIndex As Integer
 
-Public Function Effect_Snow_Begin(ByVal Gfx As Integer, ByVal Particles As Integer) As Integer
+Public Function Effect_Snow_Begin(ByVal Particles As Integer) As Integer
 
     '*****************************************************************
     'More info: http://www.vbgore.com/CommonCode.Particles.Effect_Snow_Begin
@@ -27,10 +23,10 @@ Public Function Effect_Snow_Begin(ByVal Gfx As Integer, ByVal Particles As Integ
         Effect_Snow_Begin = EffectIndex
 
         'Set The Effect's Variables
-        .EffectNum = EffectNum_Snow      'Set the effect number
+        .EffectNum = eParticulas.Snow    'Set the effect number
         .ParticleCount = Particles       'Set the number of particles
         .Used = True                     'Enabled the effect
-        .Gfx = Gfx                       'Set the graphic
+        .Gfx = eParticulas.Snow          'Set the graphic
 
         'Set the number of particles left to the total avaliable
         .ParticlesLeft = .ParticleCount
@@ -46,7 +42,7 @@ Public Function Effect_Snow_Begin(ByVal Gfx As Integer, ByVal Particles As Integ
         For LoopC = 0 To .ParticleCount
             Set .Particles(LoopC) = New Particle
             .Particles(LoopC).Used = True
-            .PartVertex(LoopC).Rhw = 1
+            .PartVertex(LoopC).rhw = 1
             Call Effect_Snow_Reset(EffectIndex, LoopC, 1)
         Next LoopC
 
@@ -140,7 +136,7 @@ Public Sub Effect_Snow_Update(ByVal EffectIndex As Integer)
     
 End Sub
 
-Public Function Effect_Rain_Begin(ByVal Gfx As Integer, ByVal Particles As Integer) As Integer
+Public Function Effect_Rain_Begin(ByVal Particles As Integer) As Integer
 
     '*****************************************************************
     'More info: http://www.vbgore.com/CommonCode.Particles.Effect_Rain_Begin
@@ -158,10 +154,10 @@ Public Function Effect_Rain_Begin(ByVal Gfx As Integer, ByVal Particles As Integ
     With Effect(EffectIndex)
 
         'Set the effect's variables
-        .EffectNum = EffectNum_Rain      'Set the effect number
+        .EffectNum = eParticulas.Rain    'Set the effect number
         .ParticleCount = Particles       'Set the number of particles
         .Used = True                     'Enabled the effect
-        .Gfx = Gfx                       'Set the graphic
+        .Gfx = eParticulas.Rain          'Set the graphic
 
         'Set the number of particles left to the total avaliable
         .ParticlesLeft = .ParticleCount
@@ -177,7 +173,7 @@ Public Function Effect_Rain_Begin(ByVal Gfx As Integer, ByVal Particles As Integ
         For LoopC = 0 To .ParticleCount
             Set .Particles(LoopC) = New Particle
             .Particles(LoopC).Used = True
-            .PartVertex(LoopC).Rhw = 1
+            .PartVertex(LoopC).rhw = 1
             Call Effect_Rain_Reset(EffectIndex, LoopC, 1)
         Next LoopC
 
@@ -273,7 +269,6 @@ End Sub
 
 Public Function Effect_Summon_Begin(ByVal x As Single, _
                                     ByVal y As Single, _
-                                    ByVal Gfx As Integer, _
                                     ByVal Particles As Integer, _
                                     Optional ByVal Progression As Single = 0) As Integer
 
@@ -294,12 +289,12 @@ Public Function Effect_Summon_Begin(ByVal x As Single, _
         Effect_Summon_Begin = EffectIndex
 
         'Set The Effect's Variables
-        .EffectNum = EffectNum_Summon    'Set the effect number
+        .EffectNum = eParticulas.Summon  'Set the effect number
         .ParticleCount = Particles       'Set the number of particles
         .Used = True                     'Enable the effect
         .x = x                           'Set the effect's X coordinate
         .y = y                           'Set the effect's Y coordinate
-        .Gfx = Gfx                       'Set the graphic
+        .Gfx = eParticulas.Summon        'Set the graphic
         .Progression = Progression       'If we loop the effect
 
         'Set the number of particles left to the total avaliable
@@ -316,7 +311,7 @@ Public Function Effect_Summon_Begin(ByVal x As Single, _
         For LoopC = 0 To .ParticleCount
             Set .Particles(LoopC) = New Particle
             .Particles(LoopC).Used = True
-            .PartVertex(LoopC).Rhw = 1
+            .PartVertex(LoopC).rhw = 1
             Call Effect_Summon_Reset(EffectIndex, LoopC)
         Next LoopC
 
@@ -426,14 +421,14 @@ Public Sub Engine_Weather_Update()
     If bRain And bLluvia(UserMap) = 1 And CurMapAmbient.Rain = True Then
     
         If WeatherEffectIndex <= 0 Then
-            WeatherEffectIndex = Effect_Rain_Begin(9, 500)
+            WeatherEffectIndex = Effect_Rain_Begin(500)
             
         ElseIf Effect(WeatherEffectIndex).EffectNum <> eParticulas.Rain Then
             Call Effect_Kill(WeatherEffectIndex)
-            WeatherEffectIndex = Effect_Rain_Begin(9, 500)
+            WeatherEffectIndex = Effect_Rain_Begin(500)
             
         ElseIf Not Effect(WeatherEffectIndex).Used Then
-            WeatherEffectIndex = Effect_Rain_Begin(9, 500)
+            WeatherEffectIndex = Effect_Rain_Begin(500)
 
         End If
 
@@ -442,14 +437,14 @@ Public Sub Engine_Weather_Update()
     If CurMapAmbient.Snow = True Then
     
         If WeatherEffectIndex <= 0 Then
-            WeatherEffectIndex = Effect_Snow_Begin(14, 200)
+            WeatherEffectIndex = Effect_Snow_Begin(200)
             
         ElseIf Effect(WeatherEffectIndex).EffectNum <> eParticulas.Rain Then
             Call Effect_Kill(WeatherEffectIndex)
-            WeatherEffectIndex = Effect_Snow_Begin(14, 200)
+            WeatherEffectIndex = Effect_Snow_Begin(200)
             
         ElseIf Not Effect(WeatherEffectIndex).Used Then
-            WeatherEffectIndex = Effect_Snow_Begin(14, 200)
+            WeatherEffectIndex = Effect_Snow_Begin(200)
 
         End If
 
@@ -569,31 +564,39 @@ Public Sub Engine_Weather_UpdateFog()
 End Sub
 
 Private Function Effect_NextOpenSlot() As Integer
-'*****************************************************************
-'Finds the next open effects index
-'More info: http://www.vbgore.com/CommonCode.Particles.Effect_NextOpenSlot
-'*****************************************************************
-Dim EffectIndex As Integer
 
-    'Find The Next Open Effect Slot
-    Do
-        EffectIndex = EffectIndex + 1   'Check The Next Slot
-        If EffectIndex > NumEffects Then    'Dont Go Over Maximum Amount
-            Effect_NextOpenSlot = -1
-            Exit Function
-        End If
-    Loop While Effect(EffectIndex).Used = True    'Check Next If Effect Is In Use
+    '*****************************************************************
+    'Finds the next open effects index
+    'More info: http://www.vbgore.com/CommonCode.Particles.Effect_NextOpenSlot
+    '*****************************************************************
+    Dim EffectIndex As Integer
+    
+    With Effect(EffectIndex)
+    
+        'Find The Next Open Effect Slot
+        Do
+            EffectIndex = EffectIndex + 1   'Check The Next Slot
 
-    'Return the next open slot
-    Effect_NextOpenSlot = EffectIndex
+            If EffectIndex > NumEffects Then    'Dont Go Over Maximum Amount
+                Effect_NextOpenSlot = -1
+                Exit Function
 
-    'Clear the old information from the effect
-    Erase Effect(EffectIndex).Particles()
-    Erase Effect(EffectIndex).PartVertex()
-    ZeroMemory Effect(EffectIndex), LenB(Effect(EffectIndex))
-    Effect(EffectIndex).GoToX = -30000
-    Effect(EffectIndex).GoToY = -30000
+            End If
 
+        Loop While .Used = True    'Check Next If Effect Is In Use
+
+        'Return the next open slot
+        Effect_NextOpenSlot = EffectIndex
+
+        'Clear the old information from the effect
+        Erase .Particles()
+        Erase .PartVertex()
+        Call ZeroMemory(Effect(EffectIndex), LenB(Effect(EffectIndex)))
+        .GoToX = -30000
+        .GoToY = -30000
+    
+    End With
+    
 End Function
 
 Private Function Effect_FToDW(F As Single) As Long
@@ -605,7 +608,8 @@ Dim Buf As D3DXBuffer
 
     'Converts a single into a long (Float to DWORD)
     Set Buf = DirectD3D8.CreateBuffer(4)
-    DirectD3D8.BufferSetData Buf, 0, 4, 1, F
-    DirectD3D8.BufferGetData Buf, 0, 4, 1, Effect_FToDW
+    
+    Call DirectD3D8.BufferSetData(Buf, 0, 4, 1, F)
+    Call DirectD3D8.BufferGetData(Buf, 0, 4, 1, Effect_FToDW)
 
 End Function

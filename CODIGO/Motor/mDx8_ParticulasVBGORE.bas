@@ -13,28 +13,8 @@ Private Type D3DXIMAGE_INFO_A
     ImageFileFormat As Long
 End Type
 
-Public Type tParticleTexture
-    Texture As Direct3DTexture8 'Holds the texture of the text
-    TextureWidth As Integer
-    TextureHeight As Integer
-End Type
-
 'Texture for particle effects - this is handled differently then the rest of the graphics
-Public ParticleTexture(1 To 15) As tParticleTexture
-
-Private Type ParticleVA 'TODO: used for old particles should erase maybe?
-    x As Integer
-    y As Integer
-    W As Integer
-    H As Integer
-    
-    Tx1 As Single
-    Tx2 As Single
-    Ty1 As Single
-    Ty2 As Single
-End Type
-
-
+Public ParticleTexture(1 To 15) As Direct3DTexture8
 
 Private Type Effect
 
@@ -71,9 +51,9 @@ Public NumEffects                       As Byte   'Maximum number of effects at 
 Public Effect()                         As Effect   'List of all the active effects
 
 Public Enum eParticulas
-        Snow = 1                        'Snow that covers the screen - weather effect
         Summon = 2                      'Summon effect
-        Rain = 3                        'Exact same as snow, but moves much faster and more alpha value - weather effect
+        Rain = 13                        'Exact same as snow, but moves much faster and more alpha value - weather effect
+        Snow = 14                        'Snow that covers the screen - weather effect
 End Enum
 
 Public Sub Engine_Init_ParticleEngine()
@@ -88,18 +68,13 @@ Public Sub Engine_Init_ParticleEngine()
     Dim TexInfo As D3DXIMAGE_INFO_A
     
     'Set the particles texture
-    NumEffects = 25
+    NumEffects = 15
     ReDim Effect(1 To NumEffects)
 
     For i = 1 To UBound(ParticleTexture()) - 1
 
-        If Not ParticleTexture(i).Texture Is Nothing Then
-            Dim ClearVar As tParticleTexture
-            ParticleTexture(i) = ClearVar
-        End If
-
-        Set ParticleTexture(i).Texture = DirectD3D8.CreateTextureFromFileEx(DirectDevice, _
-                                                                    Game.path(Graficos) & "p" & i & ".png", _
+        Set ParticleTexture(i) = DirectD3D8.CreateTextureFromFileEx(DirectDevice, _
+                                                                    Game.path(Graficos) & "\Efectos\p" & i & ".png", _
                                                                     D3DX_DEFAULT, _
                                                                     D3DX_DEFAULT, _
                                                                     D3DX_DEFAULT, _
@@ -112,10 +87,6 @@ Public Sub Engine_Init_ParticleEngine()
                                                                     ByVal 0, _
                                                                     ByVal 0)
                                                                     
-        'Store the size of the texture
-        ParticleTexture(i).TextureWidth = TexInfo.Width
-        ParticleTexture(i).TextureHeight = TexInfo.Height
-
     Next i
 
 End Sub
@@ -212,7 +183,7 @@ Private Function Effect_NextOpenSlot() As Integer
           
 End Function
 
-Private Sub Effect_UpdateOffset(ByVal EffectIndex As Integer)
+Private Sub Effect_UpdateOffset(ByVal EffectIndex As eParticulas)
     '***************************************************
     'Update an effect's position if the screen has moved
     'More info: http://www.vbgore.com/CommonCode.Particles.Effect_UpdateOffset
@@ -235,7 +206,7 @@ Private Sub Effect_UpdateOffset(ByVal EffectIndex As Integer)
     
 End Sub
 
-Private Sub Effect_UpdateBinding(ByVal EffectIndex As Integer)
+Private Sub Effect_UpdateBinding(ByVal EffectIndex As eParticulas)
  
     '***************************************************
     'Updates the binding of a particle effect to a target, if
@@ -328,7 +299,7 @@ Private Sub Effect_UpdateBinding(ByVal EffectIndex As Integer)
     
 End Sub
 
-Public Sub Effect_Render(ByVal EffectIndex As Integer, Optional ByVal SetRenderStates As Boolean = True)
+Public Sub Effect_Render(ByVal EffectIndex As eParticulas, Optional ByVal SetRenderStates As Boolean = True)
 '*****************************************************************
 'More info: http://www.vbgore.com/CommonCode.Particles.Effect_Render
 '*****************************************************************
@@ -343,25 +314,20 @@ Public Sub Effect_Render(ByVal EffectIndex As Integer, Optional ByVal SetRenderS
     
     'Set the render state to point blitting
     If SetRenderStates Then
-        DirectDevice.SetRenderState D3DRS_DESTBLEND, D3DBLEND_ONE
+        Call DirectDevice.SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE)
     End If
     
     'Set the texture
-    'Call SpriteBatch.SetTexture(ParticleTexture(Effect(EffectIndex).Gfx).Texture)
+    Call DirectDevice.SetTexture(0, ParticleTexture(Effect(EffectIndex).Gfx))
 
     'Draw all the particles at once
-    'Call SpriteBatch.Draw(.x, .y, ParticleTexture(Effect(EffectIndex).Gfx).TextureWidth, ParticleTexture(Effect(EffectIndex).Gfx).TextureHeight, .Color(), .tU, .tV, , , True, , D3DPT_POINTLIST)
-    
-    
-    'Set the texture
-    DirectDevice.SetTexture 0, ParticleTexture(Effect(EffectIndex).Gfx).Texture
+    Call DirectDevice.DrawPrimitiveUP(D3DPT_POINTLIST, Effect(EffectIndex).ParticleCount, Effect(EffectIndex).PartVertex(0), Len(Effect(EffectIndex).PartVertex(0)))
 
-    'Draw all the particles at once
-    DirectDevice.DrawIndexedPrimitiveUP D3DPT_TRIANGLESTRIP, 0, 4, Effect(EffectIndex).ParticleCount, temp_verts, D3DFMT_INDEX16, Effect(EffectIndex).PartVertex(0), Len(Effect(EffectIndex).PartVertex(0))
-    
     'Reset the render state back to normal
-    If SetRenderStates Then DirectDevice.SetRenderState D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA
-
+    If SetRenderStates Then
+        Call DirectDevice.SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA)
+    End If
+    
 End Sub
 
 Sub Effect_UpdateAll()
@@ -409,7 +375,7 @@ Sub Effect_UpdateAll()
             End Select
             
             'Render the effect
-            Call Effect_Render(LoopC, False)
+            Call Effect_Render(LoopC, True)
 
         End If
 
