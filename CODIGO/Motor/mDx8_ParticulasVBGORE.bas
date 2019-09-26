@@ -40,8 +40,8 @@ Private Type Effect
         BindSpeed As Single             'How fast the effect moves towards the character
         BoundToMap As Byte              'If the effect is bound to the map or not (used only by the map editor)
         r As Single
-        G As Single
-        B As Single
+        g As Single
+        b As Single
         EcuationCount As Byte
         Sng As Single                   'Misc variable
 
@@ -91,7 +91,7 @@ Public Sub Engine_Init_ParticleEngine()
 
 End Sub
 
-Private Function Effect_FToDW(ByVal F As Single) As Long
+Public Function Effect_FToDW(ByVal F As Single) As Long
 
         '*****************************************************************
         'Converts a float to a D-Word, or in Visual Basic terms, a Single to a Long
@@ -142,7 +142,7 @@ Public Sub Effect_Kill(Optional ByVal EffectIndex As Integer = 1, _
 
 End Sub
 
-Private Function Effect_NextOpenSlot() As Integer
+Public Function Effect_NextOpenSlot() As Integer
 
     '*****************************************************************
     'Finds the next open effects index
@@ -424,7 +424,7 @@ Public Sub Effect_Create(ByVal CharIndex As Integer, ByVal Effect As eParticulas
     Select Case Effect
     
         Case eParticulas.Summon
-            charlist(CharIndex).ParticleIndex = Effect_Summon_Begin(x, y, 1, 500, 0.1)
+            charlist(CharIndex).ParticleIndex = Effect_Summon_Begin(x, y, 500, 0.1)
 
     End Select
 
