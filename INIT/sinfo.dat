@@ -1,5 +1,5 @@
 [INIT]
-Cant=9
+Cant=10
 
 [S1]
 Desc=Rol - Alkon 0.13.X
@@ -39,18 +39,24 @@ PJ=7666
 Mundo=Alkon
 
 [S7]
+Desc= AO Rest (Simil-server fruta)
+IP=190.191.135.76
+PJ=7666
+Mundo=Alkon
+
+[S8]
 Desc=Servidor Local | Modo:Alkon 0.13.X
 IP=localhost
 PJ=7666
 Mundo=Alkon
 
-[S8]
+[S9]
 Desc=Servidor Local | Modo:BattleServer
 IP=localhost
 PJ=7666
 Mundo=BattleServer
 
-[S9]
+[S10]
 Desc=Servidor Local | Modo:Deathmatch
 IP=localhost
 PJ=7666
