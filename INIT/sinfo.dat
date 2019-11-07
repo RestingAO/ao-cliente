@@ -39,6 +39,12 @@ PJ=7666
 Mundo=Alkon
 
 [S7]
+Desc= AO Rest (Simil-server fruta)
+IP=190.191.135.76
+PJ=7666
+Mundo=Alkon
+
+[S7]
 Desc=Servidor Local | Modo:Alkon 0.13.X
 IP=localhost
 PJ=7666
